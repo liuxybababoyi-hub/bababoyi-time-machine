@@ -5,8 +5,10 @@
 $scriptDir = $PSScriptRoot
 $photosDir = Join-Path $scriptDir "photos"
 $thumbDir = Join-Path $photosDir "thumbs"
+$previewDir = Join-Path $photosDir "previews"
 $outputFile = Join-Path $scriptDir "photos.js"
 $maxThumbWidth = 800
+$maxPreviewWidth = 2560
 $jpegQuality = 80
 
 $extensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff", ".tif", ".heic", ".heif", ".avif")
@@ -28,6 +30,7 @@ catch {
 
 # Create thumb dir if needed
 if (-not (Test-Path $thumbDir)) { New-Item -ItemType Directory -Path $thumbDir -Force | Out-Null }
+if (-not (Test-Path $previewDir)) { New-Item -ItemType Directory -Path $previewDir -Force | Out-Null }
 
 $files = Get-ChildItem $photosDir -File | Where-Object { $_.Extension.ToLower() -in $extensions }
 
@@ -44,8 +47,23 @@ function New-Thumbnail($srcPath, $dstPath, $maxW, $quality) {
         $img = [System.Drawing.Image]::FromFile($srcPath)
         $w = $img.Width; $h = $img.Height
         if ($w -le $maxW) {
-            $img.Dispose()
-            Copy-Item $srcPath $dstPath
+            # Still save as JPEG (source might be PNG)
+            if ($img.RawFormat.Guid -ne [System.Drawing.Imaging.ImageFormat]::Jpeg.Guid) {
+                $bmp = New-Object System.Drawing.Bitmap($w, $h)
+                $g = [System.Drawing.Graphics]::FromImage($bmp)
+                $g.DrawImage($img, 0, 0, $w, $h)
+                $g.Dispose(); $img.Dispose()
+                $encoder = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |
+                    Where-Object { $_.MimeType -eq 'image/jpeg' }
+                $ep = New-Object System.Drawing.Imaging.EncoderParameters(1)
+                $ep.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
+                    [System.Drawing.Imaging.Encoder]::Quality, $quality)
+                $bmp.Save($dstPath, $encoder, $ep)
+                $bmp.Dispose()
+            } else {
+                $img.Dispose()
+                Copy-Item $srcPath $dstPath
+            }
             return "COPY ($($w)x$h)"
         }
         $ratio = $maxW / $w
@@ -112,6 +130,18 @@ foreach ($f in $files) {
         $thumbNew++
     }
 
+    # --- Preview (2560px) ---
+    $previewName = [System.IO.Path]::GetFileNameWithoutExtension($f.Name) + ".jpg"
+    $previewPath = Join-Path $previewDir $previewName
+    $previewRel = "photos/previews/$previewName"
+
+    if (Test-Path $previewPath) {
+        Write-Host "  [preview] SKIP (exists)  $previewName"
+    } else {
+        $previewResult = New-Thumbnail $f.FullName $previewPath $maxPreviewWidth $jpegQuality
+        Write-Host "  [preview] $previewResult  $previewName"
+    }
+
     # --- Build result ---
     $relPath = ($f.FullName.Substring($scriptDir.Length + 1)).Replace("\", "/")
     $displayDate = $date.Substring(0, 10).Replace(":", "-")
@@ -119,6 +149,7 @@ foreach ($f in $files) {
     $results += @{
         src     = $relPath
         thumb   = $thumbRel
+        preview = $previewRel
         alt     = $f.BaseName
         date    = $displayDate
         rawDate = $date
@@ -134,9 +165,10 @@ $entries = @()
 foreach ($r in $results) {
     $src = $r.src -replace '\\', '/'
     $thumb = $r.thumb -replace '\\', '/'
+    $preview = $r.preview -replace '\\', '/'
     $alt = $r.alt
     $date = $r.date
-    $entries += "  { `"src`": `"$src`", `"thumb`": `"$thumb`", `"alt`": `"$alt`", `"date`": `"$date`" }"
+    $entries += "  { `"src`": `"$src`", `"thumb`": `"$thumb`", `"preview`": `"$preview`", `"alt`": `"$alt`", `"date`": `"$date`" }"
 }
 
 $content = @"

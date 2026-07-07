@@ -189,6 +189,19 @@
     letter-spacing: 0.05em;
     z-index: 1001;
   }
+  .lb-original {
+    position: fixed; bottom: 18px; right: 22px;
+    font-size: 0.72rem; color: #555;
+    z-index: 1001;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .lb-original:hover { color: var(--accent); }
+
+  @media (max-width: 768px) {
+    .lb-original { bottom: 10px; right: 12px; }
+  }
 
   /* ── Empty state ── */
   .empty-state {
@@ -248,6 +261,7 @@
   <img id="lbImg" src="" alt="" />
   <span class="lb-date" id="lbDate"></span>
   <span class="lb-counter" id="lbCounter"></span>
+  <a class="lb-original" id="lbOriginal" href="#" target="_blank" rel="noopener">🔍 查看原图</a>
 </div>
 
 <footer>巴巴博一的时光机 · 用镜头记录时光</footer>
@@ -266,6 +280,7 @@
   const lbImg = document.getElementById('lbImg');
   const lbSpinner = document.getElementById('lbSpinner');
   const lbCounter = document.getElementById('lbCounter');
+  const lbOriginal = document.getElementById('lbOriginal');
   const lbDate = document.getElementById('lbDate');
   let currentIndex = -1;   // index into sortedPhotos
   let sortedPhotos = [];   // flat array, globally sorted, for lightbox nav
@@ -366,8 +381,9 @@
           item.appendChild(broken);
           item.classList.add('loaded');
         };
-        // Grid uses thumbnail, lightbox uses original
+        // Grid uses thumbnail, lightbox uses preview (or original as fallback)
         img.src = photo.thumb || photo.src;
+        img.setAttribute('data-preview', photo.preview || photo.src);
         img.setAttribute('data-full', photo.src);
 
         item.appendChild(skeleton);
@@ -398,8 +414,9 @@
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
 
-    lbImg.src = photo.src;
+    lbImg.src = photo.preview || photo.src;
     lbImg.alt = photo.alt || '';
+    lbOriginal.href = photo.src;
     lbDate.textContent = photo.date || '';
     updateCounter();
   }
@@ -431,8 +448,9 @@
     lbImg.src = '';
     lbSpinner.style.display = '';
 
-    lbImg.src = photo.src;
+    lbImg.src = photo.preview || photo.src;
     lbImg.alt = photo.alt || '';
+    lbOriginal.href = photo.src;
     lbDate.textContent = photo.date || '';
     updateCounter();
   }

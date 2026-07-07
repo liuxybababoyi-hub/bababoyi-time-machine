@@ -16,9 +16,11 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).parent
 PHOTOS_DIR = SCRIPT_DIR / 'photos'
 THUMB_DIR = PHOTOS_DIR / 'thumbs'
+PREVIEW_DIR = PHOTOS_DIR / 'previews'
 OUTPUT_FILE = SCRIPT_DIR / 'photos.js'
 
 MAX_THUMB_WIDTH = 800
+MAX_PREVIEW_WIDTH = 2560
 JPEG_QUALITY = 80
 
 EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.tiff', '.tif', '.heic', '.heif', '.avif'}
@@ -102,10 +104,15 @@ def make_thumbnail(src: Path, dst: Path, max_w: int = MAX_THUMB_WIDTH, quality: 
     from PIL import Image
     img = Image.open(src)
     w, h = img.size
+
     if w <= max_w:
+        # Still convert to JPEG (source might be PNG, and we always want .jpg output)
+        if img.mode in ('RGBA', 'P', 'LA'):
+            img = img.convert('RGB')
+        elif img.mode != 'RGB':
+            img = img.convert('RGB')
+        img.save(dst, 'JPEG', quality=quality)
         img.close()
-        import shutil
-        shutil.copy2(src, dst)
         return f'COPY ({w}x{h})'
 
     new_h = int(h * max_w / w)
@@ -127,6 +134,7 @@ def scan(ascending: bool = False):
         return
 
     THUMB_DIR.mkdir(parents=True, exist_ok=True)
+    PREVIEW_DIR.mkdir(parents=True, exist_ok=True)
 
     files = []
     for f in sorted(PHOTOS_DIR.iterdir()):
@@ -134,20 +142,32 @@ def scan(ascending: bool = False):
             date_str, source = extract_date(f)
             rel_src = f.relative_to(SCRIPT_DIR).as_posix()
 
-            # Thumbnail
+            # Thumbnail (800px)
             thumb_name = f.stem + '.jpg'
             thumb_path = THUMB_DIR / thumb_name
             thumb_rel = f'photos/thumbs/{thumb_name}'
 
             if not thumb_path.exists():
-                status = make_thumbnail(f, thumb_path)
+                status = make_thumbnail(f, thumb_path, MAX_THUMB_WIDTH)
                 print(f'  [thumb] {status}  {thumb_name}')
             else:
                 print(f'  [thumb] SKIP (exists)  {thumb_name}')
 
+            # Preview (2560px)
+            preview_name = f.stem + '.jpg'
+            preview_path = PREVIEW_DIR / preview_name
+            preview_rel = f'photos/previews/{preview_name}'
+
+            if not preview_path.exists():
+                status = make_thumbnail(f, preview_path, MAX_PREVIEW_WIDTH)
+                print(f'  [preview] {status}  {preview_name}')
+            else:
+                print(f'  [preview] SKIP (exists)  {preview_name}')
+
             files.append({
                 'src': rel_src,
                 'thumb': thumb_rel,
+                'preview': preview_rel,
                 'alt': f.stem,
                 'date': date_str,
                 '_source': source,
