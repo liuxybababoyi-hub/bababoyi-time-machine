@@ -1,5 +1,5 @@
 // Photo list for bababoyi-time-machine
-// 23 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
+// 21 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
   { "src": "photos/DSC_1730.JPG", "thumb": "photos/thumbs/DSC_1730.jpg", "alt": "DSC_1730", "date": "2026-07-04" },
   { "src": "photos/DSC_1718.JPG", "thumb": "photos/thumbs/DSC_1718.jpg", "alt": "DSC_1718", "date": "2026-07-04" },
@@ -17,8 +17,6 @@ var PHOTOS = [
   { "src": "photos/DSC_1593.JPG", "thumb": "photos/thumbs/DSC_1593.jpg", "alt": "DSC_1593", "date": "2026-06-04" },
   { "src": "photos/Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79.png", "thumb": "photos/thumbs/Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79.jpg", "alt": "Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79", "date": "2026-05-22" },
   { "src": "photos/屏幕截图 2026-04-13 190202.png", "thumb": "photos/thumbs/屏幕截图 2026-04-13 190202.jpg", "alt": "屏幕截图 2026-04-13 190202", "date": "2026-04-13" },
-  { "src": "photos/_DSC1492.JPG", "thumb": "photos/thumbs/_DSC1492.jpg", "alt": "_DSC1492", "date": "2026-02-10" },
-  { "src": "photos/_DSC1481.JPG", "thumb": "photos/thumbs/_DSC1481.jpg", "alt": "_DSC1481", "date": "2026-02-10" },
   { "src": "photos/Red Dead Redemption 2 Screenshot 2026.02.03 - 12.00.30.31.png", "thumb": "photos/thumbs/Red Dead Redemption 2 Screenshot 2026.02.03 - 12.00.30.31.jpg", "alt": "Red Dead Redemption 2 Screenshot 2026.02.03 - 12.00.30.31", "date": "2026-02-03" },
   { "src": "photos/Red Dead Redemption 2 Screenshot 2026.01.29 - 15.32.05.92.png", "thumb": "photos/thumbs/Red Dead Redemption 2 Screenshot 2026.01.29 - 15.32.05.92.jpg", "alt": "Red Dead Redemption 2 Screenshot 2026.01.29 - 15.32.05.92", "date": "2026-01-29" },
   { "src": "photos/Red Dead Redemption 2 Screenshot 2026.01.24 - 15.09.19.29.png", "thumb": "photos/thumbs/Red Dead Redemption 2 Screenshot 2026.01.24 - 15.09.19.29.jpg", "alt": "Red Dead Redemption 2 Screenshot 2026.01.24 - 15.09.19.29", "date": "2026-01-24" },
