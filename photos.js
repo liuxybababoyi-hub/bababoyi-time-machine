@@ -1,5 +1,5 @@
 // Photo list for bababoyi-time-machine
-// 22 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
+// 23 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
   { "src": "photos/DSC_1730.JPG", "thumb": "photos/thumbs/DSC_1730.jpg", "alt": "DSC_1730", "date": "2026-07-04" },
   { "src": "photos/DSC_1718.JPG", "thumb": "photos/thumbs/DSC_1718.jpg", "alt": "DSC_1718", "date": "2026-07-04" },
@@ -15,6 +15,7 @@ var PHOTOS = [
   { "src": "photos/屏幕截图 2026-06-10 132111.png", "thumb": "photos/thumbs/屏幕截图 2026-06-10 132111.jpg", "alt": "屏幕截图 2026-06-10 132111", "date": "2026-06-10" },
   { "src": "photos/NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57.png", "thumb": "photos/thumbs/NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57.jpg", "alt": "NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57", "date": "2026-06-06" },
   { "src": "photos/DSC_1593.JPG", "thumb": "photos/thumbs/DSC_1593.jpg", "alt": "DSC_1593", "date": "2026-06-04" },
+  { "src": "photos/Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79.png", "thumb": "photos/thumbs/Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79.jpg", "alt": "Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79", "date": "2026-05-22" },
   { "src": "photos/屏幕截图 2026-04-13 190202.png", "thumb": "photos/thumbs/屏幕截图 2026-04-13 190202.jpg", "alt": "屏幕截图 2026-04-13 190202", "date": "2026-04-13" },
   { "src": "photos/_DSC1492.JPG", "thumb": "photos/thumbs/_DSC1492.jpg", "alt": "_DSC1492", "date": "2026-02-10" },
   { "src": "photos/_DSC1481.JPG", "thumb": "photos/thumbs/_DSC1481.jpg", "alt": "_DSC1481", "date": "2026-02-10" },

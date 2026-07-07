@@ -53,7 +53,7 @@ Write-Host ""
 # --- Step 3: Push ---
 Write-Host "[3/3] Pushing to GitHub..." -ForegroundColor Yellow
 Write-Host "  (if a login window appears, sign in to GitHub)" -ForegroundColor Gray
-git push 2>&1
+git push 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
     Write-Host "[FAIL] Push failed. Check network or run: git push" -ForegroundColor Red
