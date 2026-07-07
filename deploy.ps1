@@ -19,10 +19,6 @@ Write-Host "[1/3] Scanning photos..." -ForegroundColor Yellow
 $scanScript = Join-Path $scriptDir "scan-photos.ps1"
 if (Test-Path $scanScript) {
     & $scanScript
-    if (-not $?) {
-        Write-Host "[FAIL] Scan error" -ForegroundColor Red
-        Pop-Location; Read-Host "Press Enter to exit"; exit 1
-    }
 } else {
     Write-Host "[FAIL] scan-photos.ps1 not found" -ForegroundColor Red
     Pop-Location; Read-Host "Press Enter to exit"; exit 1
@@ -48,7 +44,7 @@ Write-Host ""
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 $commitMsg = "$Message - $timestamp"
 git commit -m "$commitMsg" 2>&1
-if (-not $?) {
+if ($LASTEXITCODE -ne 0) {
     Write-Host "[FAIL] Commit failed" -ForegroundColor Red
     Pop-Location; Read-Host "Press Enter to exit"; exit 1
 }
@@ -58,7 +54,7 @@ Write-Host ""
 Write-Host "[3/3] Pushing to GitHub..." -ForegroundColor Yellow
 Write-Host "  (if a login window appears, sign in to GitHub)" -ForegroundColor Gray
 git push 2>&1
-if (-not $?) {
+if ($LASTEXITCODE -ne 0) {
     Write-Host ""
     Write-Host "[FAIL] Push failed. Check network or run: git push" -ForegroundColor Red
     Pop-Location; Read-Host "Press Enter to exit"; exit 1
