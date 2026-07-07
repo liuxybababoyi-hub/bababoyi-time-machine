@@ -1,5 +1,5 @@
 // Photo list for bababoyi-time-machine
-// 20 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
+// 22 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
   { "src": "photos/DSC_1730.JPG", "thumb": "photos/thumbs/DSC_1730.jpg", "alt": "DSC_1730", "date": "2026-07-04" },
   { "src": "photos/DSC_1718.JPG", "thumb": "photos/thumbs/DSC_1718.jpg", "alt": "DSC_1718", "date": "2026-07-04" },
@@ -13,7 +13,9 @@ var PHOTOS = [
   { "src": "photos/DSC_1612.JPG", "thumb": "photos/thumbs/DSC_1612.jpg", "alt": "DSC_1612", "date": "2026-06-11" },
   { "src": "photos/DSC_1605.JPG", "thumb": "photos/thumbs/DSC_1605.jpg", "alt": "DSC_1605", "date": "2026-06-11" },
   { "src": "photos/屏幕截图 2026-06-10 132111.png", "thumb": "photos/thumbs/屏幕截图 2026-06-10 132111.jpg", "alt": "屏幕截图 2026-06-10 132111", "date": "2026-06-10" },
+  { "src": "photos/NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57.png", "thumb": "photos/thumbs/NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57.jpg", "alt": "NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57", "date": "2026-06-06" },
   { "src": "photos/DSC_1593.JPG", "thumb": "photos/thumbs/DSC_1593.jpg", "alt": "DSC_1593", "date": "2026-06-04" },
+  { "src": "photos/屏幕截图 2026-04-13 190202.png", "thumb": "photos/thumbs/屏幕截图 2026-04-13 190202.jpg", "alt": "屏幕截图 2026-04-13 190202", "date": "2026-04-13" },
   { "src": "photos/_DSC1492.JPG", "thumb": "photos/thumbs/_DSC1492.jpg", "alt": "_DSC1492", "date": "2026-02-10" },
   { "src": "photos/_DSC1481.JPG", "thumb": "photos/thumbs/_DSC1481.jpg", "alt": "_DSC1481", "date": "2026-02-10" },
   { "src": "photos/Red Dead Redemption 2 Screenshot 2026.02.03 - 12.00.30.31.png", "thumb": "photos/thumbs/Red Dead Redemption 2 Screenshot 2026.02.03 - 12.00.30.31.jpg", "alt": "Red Dead Redemption 2 Screenshot 2026.02.03 - 12.00.30.31", "date": "2026-02-03" },
