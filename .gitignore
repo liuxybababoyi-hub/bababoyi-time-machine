@@ -1,0 +1,7 @@
+# 系统文件
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# 扫描脚本生成的中间文件（可选保留）
+# photos.js 需要部署，不忽略

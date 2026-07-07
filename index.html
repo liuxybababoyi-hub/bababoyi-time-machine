@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巴巴博一的时光机</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --text: #c2c2c2;
+    --text-light: #777;
+    --accent: #c8966e;
+    --accent-dim: #6b4f3b;
+    --overlay-bg: rgba(0,0,0,0.96);
+    --gap: 6px;
+    --col-min: 320px;
+    --max-width: 1800px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-y: scroll;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 56px 28px 20px;
+  }
+  .page-header h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #e8e0d8;
+    letter-spacing: 0.06em;
+  }
+  .page-header .subtitle {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+  }
+  .page-header .total-count {
+    margin-top: 14px;
+    font-size: 0.72rem;
+    color: #555;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Gallery sections ── */
+  .sections {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--gap) 80px;
+  }
+  .gallery-section {
+    margin-top: 44px;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 0 4px 10px;
+    border-bottom: 1px solid #1e1e1e;
+    margin-bottom: 14px;
+  }
+  .section-head .month {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .section-head .count {
+    font-size: 0.7rem;
+    color: #444;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Gallery grid (CSS columns masonry) ── */
+  .gallery {
+    columns: 4 var(--col-min);
+    column-gap: var(--gap);
+  }
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: var(--gap);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #141414;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .gallery-item.loaded {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .gallery-item img {
+    width: 100%;
+    display: block;
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: brightness(0.92);
+  }
+  .gallery-item:hover img {
+    transform: scale(1.025);
+    filter: brightness(1.05);
+  }
+  .gallery-item .skeleton {
+    width: 100%;
+    aspect-ratio: 3/2;
+    background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: var(--overlay-bg);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+    cursor: zoom-out;
+  }
+  .lightbox.open { opacity: 1; pointer-events: auto; }
+  .lightbox img {
+    max-width: 92vw; max-height: 90vh;
+    object-fit: contain;
+    cursor: default;
+    user-select: none; -webkit-user-select: none;
+    opacity: 0; transform: scale(0.94);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .lightbox.open img.loaded { opacity: 1; transform: scale(1); }
+  .lightbox .spinner {
+    position: absolute;
+    width: 32px; height: 32px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .lb-close {
+    position: fixed; top: 20px; right: 20px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: #aaa;
+    cursor: pointer; z-index: 1001;
+    transition: color 0.2s;
+    background: none; border: none; line-height: 1;
+  }
+  .lb-close:hover { color: #fff; }
+  .lb-arrow {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 52px; height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: #888;
+    cursor: pointer; z-index: 1001;
+    transition: color 0.2s;
+    background: none; border: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lb-arrow:hover { color: #fff; }
+  .lb-prev { left: 4px; }
+  .lb-next { right: 4px; }
+  .lb-counter {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    font-size: 0.78rem; color: #666;
+    letter-spacing: 0.08em;
+    z-index: 1001;
+  }
+  .lb-date {
+    position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+    font-size: 0.7rem; color: #555;
+    letter-spacing: 0.05em;
+    z-index: 1001;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center; padding: 80px 20px;
+  }
+  .empty-state p {
+    color: var(--text-light);
+    font-size: 0.95rem; line-height: 1.8;
+  }
+  .empty-state code {
+    background: #1a1a1a; padding: 2px 8px;
+    border-radius: 3px; font-size: 0.85rem;
+    color: var(--accent);
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 60px 20px 50px;
+    font-size: 0.72rem; color: #333;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    :root { --col-min: 240px; --gap: 4px; }
+    .page-header { padding: 40px 16px 16px; }
+    .page-header h1 { font-size: 1.35rem; }
+    .lb-arrow { width: 44px; }
+    .lb-close { top: 12px; right: 8px; }
+    .lb-counter { bottom: 18px; }
+    .lb-date { bottom: 38px; }
+  }
+  @media (max-width: 480px) {
+    :root { --col-min: 160px; --gap: 2px; }
+    .gallery { columns: 2 var(--col-min); }
+    .page-header h1 { font-size: 1.2rem; }
+    .section-head .month { font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>巴巴博一的时光机</h1>
+  <p class="subtitle">每一帧都是时光的切片</p>
+  <p class="total-count" id="totalCount"></p>
+</header>
+
+<main id="sections" class="sections"></main>
+
+<div id="lightbox" class="lightbox">
+  <button class="lb-close" aria-label="关闭">&times;</button>
+  <button class="lb-arrow lb-prev" aria-label="上一张">&#10094;</button>
+  <button class="lb-arrow lb-next" aria-label="下一张">&#10095;</button>
+  <div class="spinner" id="lbSpinner"></div>
+  <img id="lbImg" src="" alt="" />
+  <span class="lb-date" id="lbDate"></span>
+  <span class="lb-counter" id="lbCounter"></span>
+</div>
+
+<footer>巴巴博一的时光机 · 用镜头记录时光</footer>
+
+<script src="photos.js"></script>
+<script>
+(function() {
+  if (typeof PHOTOS === 'undefined') {
+    console.warn('photos.js 未加载');
+    PHOTOS = [];
+  }
+
+  const sectionsEl = document.getElementById('sections');
+  const totalCount = document.getElementById('totalCount');
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbSpinner = document.getElementById('lbSpinner');
+  const lbCounter = document.getElementById('lbCounter');
+  const lbDate = document.getElementById('lbDate');
+  let currentIndex = -1;   // index into sortedPhotos
+  let sortedPhotos = [];   // flat array, globally sorted, for lightbox nav
+
+  // ── Parse date string to comparable value ──
+  function parseDate(dateStr) {
+    if (!dateStr) return 0;
+    // "2026-07-04" or "2026:07:04 20:53:59"
+    var m = dateStr.match(/(\d{4})[-:](\d{2})[-:](\d{2})/);
+    if (m) return new Date(+m[1], +m[2] - 1, +m[3]).getTime();
+    return 0;
+  }
+
+  // ── Chinese month label ──
+  function monthLabel(ym) {
+    // ym = "2026-07"
+    var parts = ym.split('-');
+    return parts[0] + '年' + parseInt(parts[1], 10) + '月';
+  }
+
+  // ── Build sections ──
+  function buildGallery() {
+    if (!PHOTOS.length) {
+      sectionsEl.innerHTML = '<div class="empty-state"><p>还没有照片。</p><p>把照片放进 <code>photos/</code> 文件夹，</p><p>然后运行 <code>python scan-photos.py</code> 自动生成列表。</p></div>';
+      totalCount.textContent = '';
+      return;
+    }
+
+    // Sort by date descending (newest first)
+    sortedPhotos = PHOTOS.map(function(p, i) { p._origIdx = i; return p; });
+    sortedPhotos.sort(function(a, b) {
+      return parseDate(b.date) - parseDate(a.date);
+    });
+
+    totalCount.textContent = '共 ' + sortedPhotos.length + ' 张照片 · ' +
+      monthLabel(sortedPhotos[sortedPhotos.length - 1].date.substr(0, 7)) +
+      ' ~ ' +
+      monthLabel(sortedPhotos[0].date.substr(0, 7));
+
+    // Group by year-month
+    var groups = [];
+    sortedPhotos.forEach(function(photo, sortedIdx) {
+      photo._sortedIdx = sortedIdx;
+      var ym = '未知时间';
+      if (photo.date && photo.date.length >= 7) {
+        ym = photo.date.substr(0, 7);  // "2026-07"
+      }
+      var last = groups[groups.length - 1];
+      if (last && last.key === ym) {
+        last.photos.push(photo);
+      } else {
+        groups.push({ key: ym, photos: [photo] });
+      }
+    });
+
+    // Render each group
+    groups.forEach(function(group) {
+      var section = document.createElement('section');
+      section.className = 'gallery-section';
+
+      var head = document.createElement('div');
+      head.className = 'section-head';
+      var monthSpan = document.createElement('span');
+      monthSpan.className = 'month';
+      monthSpan.textContent = monthLabel(group.key);
+      var countSpan = document.createElement('span');
+      countSpan.className = 'count';
+      countSpan.textContent = group.photos.length + ' 张';
+      head.appendChild(monthSpan);
+      head.appendChild(countSpan);
+      section.appendChild(head);
+
+      var grid = document.createElement('div');
+      grid.className = 'gallery';
+
+      group.photos.forEach(function(photo) {
+        var item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.setAttribute('data-index', photo._sortedIdx);
+
+        var skeleton = document.createElement('div');
+        skeleton.className = 'skeleton';
+
+        var img = document.createElement('img');
+        img.alt = photo.alt || '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+
+        img.onload = function() {
+          skeleton.remove();
+          item.classList.add('loaded');
+        };
+        img.onerror = function() {
+          skeleton.remove();
+          var broken = document.createElement('div');
+          broken.style.cssText = 'width:100%;aspect-ratio:4/3;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#555;font-size:0.8rem;';
+          broken.textContent = '⚠ 图片加载失败';
+          item.appendChild(broken);
+          item.classList.add('loaded');
+        };
+        img.src = photo.src;
+
+        item.appendChild(skeleton);
+        item.appendChild(img);
+
+        item.addEventListener('click', function() {
+          openLightbox(photo._sortedIdx);
+        });
+
+        grid.appendChild(item);
+      });
+
+      section.appendChild(grid);
+      sectionsEl.appendChild(section);
+    });
+  }
+
+  // ── Lightbox ──
+  function openLightbox(index) {
+    currentIndex = index;
+    var photo = sortedPhotos[index];
+    if (!photo) return;
+
+    lbImg.classList.remove('loaded');
+    lbImg.src = '';
+    lbSpinner.style.display = '';
+
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    lbImg.src = photo.src;
+    lbImg.alt = photo.alt || '';
+    lbDate.textContent = photo.date || '';
+    updateCounter();
+  }
+
+  lbImg.addEventListener('load', function() {
+    lbSpinner.style.display = 'none';
+    lbImg.classList.add('loaded');
+  });
+  lbImg.addEventListener('error', function() {
+    lbSpinner.style.display = 'none';
+    lbImg.classList.add('loaded');
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    lbImg.src = '';
+    lbImg.classList.remove('loaded');
+    lbDate.textContent = '';
+    currentIndex = -1;
+  }
+
+  function navigate(delta) {
+    if (!sortedPhotos.length) return;
+    currentIndex = (currentIndex + delta + sortedPhotos.length) % sortedPhotos.length;
+    var photo = sortedPhotos[currentIndex];
+
+    lbImg.classList.remove('loaded');
+    lbImg.src = '';
+    lbSpinner.style.display = '';
+
+    lbImg.src = photo.src;
+    lbImg.alt = photo.alt || '';
+    lbDate.textContent = photo.date || '';
+    updateCounter();
+  }
+
+  function updateCounter() {
+    lbCounter.textContent = (currentIndex + 1) + ' / ' + sortedPhotos.length;
+  }
+
+  // ── Event listeners ──
+  document.querySelector('.lb-close').addEventListener('click', function(e) {
+    e.stopPropagation();
+    closeLightbox();
+  });
+  document.querySelector('.lb-prev').addEventListener('click', function(e) {
+    e.stopPropagation();
+    navigate(-1);
+  });
+  document.querySelector('.lb-next').addEventListener('click', function(e) {
+    e.stopPropagation();
+    navigate(1);
+  });
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (currentIndex < 0) return;
+    switch (e.key) {
+      case 'Escape': closeLightbox(); break;
+      case 'ArrowLeft':  navigate(-1); break;
+      case 'ArrowRight': navigate(1);  break;
+    }
+  });
+
+  // Touch swipe
+  (function() {
+    var touchStartX = 0, touchStartY = 0;
+    lightbox.addEventListener('touchstart', function(e) {
+      if (e.target === lbImg || e.target === lightbox) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+    lightbox.addEventListener('touchend', function(e) {
+      if (!touchStartX) return;
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      var dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        navigate(dx > 0 ? -1 : 1);
+      }
+      touchStartX = 0;
+    });
+  })();
+
+  // ── Init ──
+  buildGallery();
+})();
+</script>
+</body>
+</html>
