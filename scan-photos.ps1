@@ -1,12 +1,17 @@
-# Scan photos/ folder, extract EXIF dates, generate photos.js
+# Scan photos/ folder, extract EXIF dates, generate thumbnails & photos.js
 # Usage: Right-click -> Run with PowerShell, or .\scan-photos.ps1
+# One-click: scans photos, makes thumbs, writes photos.js — ready to deploy
 
 $scriptDir = $PSScriptRoot
 $photosDir = Join-Path $scriptDir "photos"
+$thumbDir = Join-Path $photosDir "thumbs"
 $outputFile = Join-Path $scriptDir "photos.js"
+$maxThumbWidth = 800
+$jpegQuality = 80
 
 $extensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff", ".tif", ".heic", ".heif", ".avif")
 
+# --- Checks ---
 if (-not (Test-Path $photosDir)) {
     Write-Host "[!] photos folder not found: $photosDir" -ForegroundColor Red
     Write-Host "    Please create a 'photos' folder and put your images in it."
@@ -14,13 +19,15 @@ if (-not (Test-Path $photosDir)) {
     exit 1
 }
 
-try {
-    Add-Type -AssemblyName System.Drawing -ErrorAction Stop
-} catch {
-    Write-Host "[!] Cannot load System.Drawing (required for EXIF reading)" -ForegroundColor Red
+try { Add-Type -AssemblyName System.Drawing -ErrorAction Stop }
+catch {
+    Write-Host "[!] Cannot load System.Drawing (required)" -ForegroundColor Red
     Read-Host "Press Enter to exit"
     exit 1
 }
+
+# Create thumb dir if needed
+if (-not (Test-Path $thumbDir)) { New-Item -ItemType Directory -Path $thumbDir -Force | Out-Null }
 
 $files = Get-ChildItem $photosDir -File | Where-Object { $_.Extension.ToLower() -in $extensions }
 
@@ -31,50 +38,87 @@ if ($files.Count -eq 0) {
     exit 0
 }
 
+# --- Thumbnail helper ---
+function New-Thumbnail($srcPath, $dstPath, $maxW, $quality) {
+    try {
+        $img = [System.Drawing.Image]::FromFile($srcPath)
+        $w = $img.Width; $h = $img.Height
+        if ($w -le $maxW) {
+            $img.Dispose()
+            Copy-Item $srcPath $dstPath
+            return "COPY ($($w)x$h)"
+        }
+        $ratio = $maxW / $w
+        $newH = [int]($h * $ratio)
+        $bmp = New-Object System.Drawing.Bitmap($maxW, $newH)
+        $g = [System.Drawing.Graphics]::FromImage($bmp)
+        $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+        $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+        $g.DrawImage($img, 0, 0, $maxW, $newH)
+        $g.Dispose(); $img.Dispose()
+
+        $encoder = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |
+            Where-Object { $_.MimeType -eq 'image/jpeg' }
+        $ep = New-Object System.Drawing.Imaging.EncoderParameters(1)
+        $ep.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
+            [System.Drawing.Imaging.Encoder]::Quality, $quality)
+        $bmp.Save($dstPath, $encoder, $ep)
+        $bmp.Dispose()
+        return "OK ($($w)x$h -> $($maxW)x$newH)"
+    } catch {
+        return "FAIL: $($_.Exception.Message)"
+    }
+}
+
+# --- Main loop ---
 $results = @()
-$exifOk = 0
-$fallback = 0
+$exifOk = 0; $fallback = 0
+$thumbNew = 0; $thumbSkip = 0
 
 foreach ($f in $files) {
-    $date = $null
-    $source = "mtime"
-
-    # Try EXIF via System.Drawing
+    # --- Extract date ---
+    $date = $null; $source = "mtime"
     try {
         $img = [System.Drawing.Image]::FromFile($f.FullName)
         foreach ($pi in $img.PropertyItems) {
-            if ($pi.Id -eq 36867) {  # DateTimeOriginal
+            if ($pi.Id -eq 36867) {
                 $date = [System.Text.Encoding]::ASCII.GetString($pi.Value).Trim([char]0)
-                $source = "EXIF"
-                break
+                $source = "EXIF"; break
             }
         }
         if (-not $date) {
             foreach ($pi in $img.PropertyItems) {
-                if ($pi.Id -eq 306) {  # DateTime
+                if ($pi.Id -eq 306) {
                     $date = [System.Text.Encoding]::ASCII.GetString($pi.Value).Trim([char]0)
-                    $source = "EXIF"
-                    break
+                    $source = "EXIF"; break
                 }
             }
         }
         $img.Dispose()
     } catch {}
+    if (-not $date) { $date = $f.LastWriteTime.ToString("yyyy:MM:dd HH:mm:ss"); $fallback++ }
+    else { $exifOk++ }
 
-    # Fallback: file modification time
-    if (-not $date) {
-        $date = $f.LastWriteTime.ToString("yyyy:MM:dd HH:mm:ss")
-        $fallback++
+    # --- Thumbnail ---
+    $thumbName = [System.IO.Path]::GetFileNameWithoutExtension($f.Name) + ".jpg"
+    $thumbPath = Join-Path $thumbDir $thumbName
+    $thumbRel = "photos/thumbs/$thumbName"
+
+    if (Test-Path $thumbPath) {
+        $thumbSkip++
     } else {
-        $exifOk++
+        $thumbResult = New-Thumbnail $f.FullName $thumbPath $maxThumbWidth $jpegQuality
+        Write-Host "  [thumb] $thumbResult  $thumbName"
+        $thumbNew++
     }
 
-    # Build relative path with forward slashes
+    # --- Build result ---
     $relPath = ($f.FullName.Substring($scriptDir.Length + 1)).Replace("\", "/")
-    $displayDate = $date.Substring(0, 10).Replace(":", "-")  # "YYYY-MM-DD"
+    $displayDate = $date.Substring(0, 10).Replace(":", "-")
 
     $results += @{
         src     = $relPath
+        thumb   = $thumbRel
         alt     = $f.BaseName
         date    = $displayDate
         rawDate = $date
@@ -83,16 +127,16 @@ foreach ($f in $files) {
     Write-Host "  [$source] $displayDate  $($f.Name)"
 }
 
-# Sort by date descending (newest first)
+# --- Sort & write photos.js ---
 $results = $results | Sort-Object { $_.rawDate } -Descending
 
-# Build entries
 $entries = @()
 foreach ($r in $results) {
     $src = $r.src -replace '\\', '/'
+    $thumb = $r.thumb -replace '\\', '/'
     $alt = $r.alt
     $date = $r.date
-    $entries += "  { `"src`": `"$src`", `"alt`": `"$alt`", `"date`": `"$date`" }"
+    $entries += "  { `"src`": `"$src`", `"thumb`": `"$thumb`", `"alt`": `"$alt`", `"date`": `"$date`" }"
 }
 
 $content = @"
@@ -103,9 +147,9 @@ $($entries -join ",`n")
 ];
 "@
 
-# Write with UTF-8 (no BOM, same as before)
 $utf8 = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($outputFile, $content, $utf8)
 
 Write-Host ""
-Write-Host "[OK] photos.js generated - $($results.Count) photos (EXIF: $exifOk, fallback: $fallback)" -ForegroundColor Green
+Write-Host "[OK] photos.js - $($results.Count) photos (EXIF: $exifOk, mtime: $fallback)" -ForegroundColor Green
+Write-Host "[OK] Thumbnails - $thumbNew new, $thumbSkip skipped" -ForegroundColor Green

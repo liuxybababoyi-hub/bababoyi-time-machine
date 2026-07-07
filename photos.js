@@ -1,4 +1,4 @@
-// 巴巴博一的时光机 — 照片列表
+// Photo list for bababoyi-time-machine
 // 20 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
   { "src": "photos/DSC_1730.JPG", "thumb": "photos/thumbs/DSC_1730.jpg", "alt": "DSC_1730", "date": "2026-07-04" },

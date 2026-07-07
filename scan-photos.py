@@ -1,11 +1,11 @@
-"""扫描 photos/ 目录，提取 EXIF 拍摄时间，生成按时间排序的 photos.js。
+"""扫描 photos/ 目录，提取 EXIF 拍摄时间，自动生成缩略图，写 photos.js。
 
 用法：
-    python scan-photos.py        # 扫描并生成 photos.js
+    python scan-photos.py        # 扫描并生成 photos.js + 缩略图
     python scan-photos.py --asc  # 时间升序（旧→新），默认降序（新→旧）
 
-依赖（可选）：
-    pip install Pillow            # 安装后可读取 EXIF 拍摄时间，更准确
+依赖（可选但推荐）：
+    pip install Pillow            # 读取 EXIF + 生成缩略图
 """
 import os
 import re
@@ -15,18 +15,36 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
 PHOTOS_DIR = SCRIPT_DIR / 'photos'
+THUMB_DIR = PHOTOS_DIR / 'thumbs'
 OUTPUT_FILE = SCRIPT_DIR / 'photos.js'
+
+MAX_THUMB_WIDTH = 800
+JPEG_QUALITY = 80
 
 EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.tiff', '.tif', '.heic', '.heif', '.avif'}
 
-# EXIF tags
 EXIF_DATETIME_ORIGINAL = 36867
 EXIF_DATETIME_DIGITIZED = 36868
 EXIF_DATETIME = 306
 
+_has_pil = None
+
+def has_pil():
+    global _has_pil
+    if _has_pil is None:
+        try:
+            from PIL import Image  # noqa: F401
+            _has_pil = True
+        except ImportError:
+            _has_pil = False
+    return _has_pil
+
+
+# ── Date extraction ────────────────────────────────────────────
 
 def extract_date_exif(filepath: Path) -> str | None:
-    """通过 PIL/Pillow 提取 EXIF 拍摄日期。返回格式 'YYYY:MM:DD HH:MM:SS'"""
+    if not has_pil():
+        return None
     try:
         from PIL import Image
         img = Image.open(filepath)
@@ -35,18 +53,17 @@ def extract_date_exif(filepath: Path) -> str | None:
             for tag in (EXIF_DATETIME_ORIGINAL, EXIF_DATETIME_DIGITIZED, EXIF_DATETIME):
                 val = exif.get(tag)
                 if val and isinstance(val, str):
-                    return val  # e.g. "2026:06:10 13:21:11"
+                    return val
     except Exception:
         pass
     return None
 
 
 def extract_date_filename(filepath: Path) -> str | None:
-    """从文件名中提取日期。支持常见命名模式。"""
     name = filepath.stem
     patterns = [
-        r'(\d{4})[-.](\d{2})[-.](\d{2})[-_.\s]*(\d{2})?[-.:]?(\d{2})?[-.:]?(\d{2})?',  # 2026-01-24 15.07.14
-        r'(\d{4})(\d{2})(\d{2})[-_.\s]*(\d{2})?(\d{2})?(\d{2})?',  # 20260124_150714
+        r'(\d{4})[-.](\d{2})[-.](\d{2})[-_.\s]*(\d{2})?[-.:]?(\d{2})?[-.:]?(\d{2})?',
+        r'(\d{4})(\d{2})(\d{2})[-_.\s]*(\d{2})?(\d{2})?(\d{2})?',
     ]
     for pat in patterns:
         m = re.search(pat, name)
@@ -60,79 +77,115 @@ def extract_date_filename(filepath: Path) -> str | None:
 
 
 def extract_date_mtime(filepath: Path) -> str:
-    """用文件修改时间作为最后兜底。"""
     import datetime
-    ts = os.path.getmtime(filepath)
-    dt = datetime.datetime.fromtimestamp(ts)
+    dt = datetime.datetime.fromtimestamp(os.path.getmtime(filepath))
     return dt.strftime('%Y:%m:%d %H:%M:%S')
 
 
 def extract_date(filepath: Path) -> tuple[str, str]:
-    """
-    按优先级提取拍摄日期：EXIF > 文件名 > 文件时间。
-    返回 (date_string, source_label)
-    """
     d = extract_date_exif(filepath)
     if d:
         return d, 'EXIF'
     d = extract_date_filename(filepath)
     if d:
-        return d, '文件名'
-    return extract_date_mtime(filepath), '文件时间'
+        return d, 'filename'
+    return extract_date_mtime(filepath), 'mtime'
 
+
+# ── Thumbnail generation ───────────────────────────────────────
+
+def make_thumbnail(src: Path, dst: Path, max_w: int = MAX_THUMB_WIDTH, quality: int = JPEG_QUALITY):
+    """Generate a JPEG thumbnail. Returns status string."""
+    if not has_pil():
+        return 'SKIP (pip install Pillow)'
+
+    from PIL import Image
+    img = Image.open(src)
+    w, h = img.size
+    if w <= max_w:
+        img.close()
+        import shutil
+        shutil.copy2(src, dst)
+        return f'COPY ({w}x{h})'
+
+    new_h = int(h * max_w / w)
+    img.thumbnail((max_w, new_h), Image.LANCZOS)
+    # Convert to RGB if needed (for PNG with alpha)
+    if img.mode in ('RGBA', 'P', 'LA'):
+        img = img.convert('RGB')
+    img.save(dst, 'JPEG', quality=quality)
+    img.close()
+    return f'OK ({w}x{h} -> {max_w}x{new_h})'
+
+
+# ── Main scan ───────────────────────────────────────────────────
 
 def scan(ascending: bool = False):
     if not PHOTOS_DIR.exists():
-        print(f'[!] 目录不存在: {PHOTOS_DIR}')
-        print('    请先创建 photos/ 文件夹并放入照片')
+        print(f'[!] photos/ not found: {PHOTOS_DIR}')
+        print('    Create a photos/ folder and put images in it.')
         return
 
+    THUMB_DIR.mkdir(parents=True, exist_ok=True)
+
     files = []
-    unknown = []
     for f in sorted(PHOTOS_DIR.iterdir()):
         if f.is_file() and f.suffix.lower() in EXTENSIONS:
             date_str, source = extract_date(f)
-            rel = f.relative_to(SCRIPT_DIR).as_posix()
+            rel_src = f.relative_to(SCRIPT_DIR).as_posix()
+
+            # Thumbnail
+            thumb_name = f.stem + '.jpg'
+            thumb_path = THUMB_DIR / thumb_name
+            thumb_rel = f'photos/thumbs/{thumb_name}'
+
+            if not thumb_path.exists():
+                status = make_thumbnail(f, thumb_path)
+                print(f'  [thumb] {status}  {thumb_name}')
+            else:
+                print(f'  [thumb] SKIP (exists)  {thumb_name}')
+
             files.append({
-                'src': rel,
+                'src': rel_src,
+                'thumb': thumb_rel,
                 'alt': f.stem,
                 'date': date_str,
                 '_source': source,
             })
 
     if not files:
-        print('[!] photos/ 目录中没有找到图片文件')
-        print('    支持的格式: ' + ', '.join(sorted(EXTENSIONS)))
+        print('[!] No images found in photos/')
+        print('    Supported: ' + ', '.join(sorted(EXTENSIONS)))
         return
+    if not has_pil():
+        print('\n[!] Pillow not installed. Thumbnails & EXIF skipped.')
+        print('    Run: pip install Pillow')
 
-    # 按日期排序
+    # Sort by date
     files.sort(key=lambda x: x['date'], reverse=not ascending)
 
-    # 生成 JS
     entries_list = []
     for f in files:
         source = f.pop('_source')
-        # 格式化为可读的 YYYY-MM-DD 给 JS 用
         d = f['date']
-        display_date = d[:10].replace(':', '-') if len(d) >= 10 else d
-        f['date'] = display_date
+        f['date'] = d[:10].replace(':', '-') if len(d) >= 10 else d
         entries_list.append(json.dumps(f, ensure_ascii=False))
-        print(f'  [{source}] {display_date}  {f["src"]}')
+        print(f'  [{source}] {f["date"]}  {f["src"]}')
 
-    direction = '↓ 新→旧' if not ascending else '↑ 旧→新'
+    direction = 'newest first' if not ascending else 'oldest first'
     entries = ',\n  '.join(entries_list)
-    content = f'''// 巴巴博一的时光机 — 照片列表（由 scan-photos.py 自动生成）
-// 共 {len(files)} 张 | 排序: 拍摄时间 {direction} | 添加新照片后重新运行扫描脚本即可
+    content = f'''// Photo list for bababoyi-time-machine
+// {len(files)} photos | sorted by date ({direction}) | auto-generated, re-run after adding photos
 var PHOTOS = [
   {entries}
 ];
 '''
     OUTPUT_FILE.write_text(content, encoding='utf-8')
-    print(f'\n[OK] 已生成 {OUTPUT_FILE.name} — {len(files)} 张照片')
+    print(f'\n[OK] {OUTPUT_FILE.name} written — {len(files)} photos')
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='扫描照片目录生成 photos.js')
-    parser.add_argument('--asc', action='store_true', help='时间升序排列（旧→新），默认降序')
+    parser = argparse.ArgumentParser(description='Scan photos, generate thumbnails & photos.js')
+    parser.add_argument('--asc', action='store_true', help='Sort ascending (oldest first)')
     args = parser.parse_args()
     scan(ascending=args.asc)
