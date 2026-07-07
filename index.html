@@ -366,7 +366,9 @@
           item.appendChild(broken);
           item.classList.add('loaded');
         };
-        img.src = photo.src;
+        // Grid uses thumbnail, lightbox uses original
+        img.src = photo.thumb || photo.src;
+        img.setAttribute('data-full', photo.src);
 
         item.appendChild(skeleton);
         item.appendChild(img);

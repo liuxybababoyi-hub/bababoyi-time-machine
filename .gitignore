@@ -3,5 +3,8 @@ Thumbs.db
 .DS_Store
 Desktop.ini
 
+# Windows 保留设备名，git 无法处理
+nul
+
 # 扫描脚本生成的中间文件（可选保留）
 # photos.js 需要部署，不忽略
