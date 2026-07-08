@@ -1,6 +1,7 @@
 // Photo list for bababoyi-time-machine
-// 40 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
+// 41 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
+  { "src": "photos/微信图片_20260708105035_850_5.heic", "thumb": "photos/thumbs/微信图片_20260708105035_850_5.jpg", "preview": "photos/previews/微信图片_20260708105035_850_5.jpg", "alt": "微信图片_20260708105035_850_5", "date": "2026-07-08" },
   { "src": "photos/DSC_1730.JPG", "thumb": "photos/thumbs/DSC_1730.jpg", "preview": "photos/previews/DSC_1730.jpg", "alt": "DSC_1730", "date": "2026-07-04" },
   { "src": "photos/DSC_1718.JPG", "thumb": "photos/thumbs/DSC_1718.jpg", "preview": "photos/previews/DSC_1718.jpg", "alt": "DSC_1718", "date": "2026-07-04" },
   { "src": "photos/DSC_1717.JPG", "thumb": "photos/thumbs/DSC_1717.jpg", "preview": "photos/previews/DSC_1717.jpg", "alt": "DSC_1717", "date": "2026-07-04" },
