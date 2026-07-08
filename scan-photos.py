@@ -13,6 +13,10 @@ import json
 import argparse
 from pathlib import Path
 
+# 注册 HEIC/HEIF/AVIF 解码支持（微信图片、苹果设备照片）
+from pillow_heif import register_heif_opener
+register_heif_opener()
+
 SCRIPT_DIR = Path(__file__).parent
 PHOTOS_DIR = SCRIPT_DIR / 'photos'
 THUMB_DIR = PHOTOS_DIR / 'thumbs'

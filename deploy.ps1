@@ -16,11 +16,15 @@ Write-Host ""
 
 # --- Step 1: Scan photos ---
 Write-Host "[1/3] Scanning photos..." -ForegroundColor Yellow
-$scanScript = Join-Path $scriptDir "scan-photos.ps1"
+$scanScript = Join-Path $scriptDir "scan-photos.py"
 if (Test-Path $scanScript) {
-    & $scanScript
+    python $scanScript
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[FAIL] Scan failed (exit code $LASTEXITCODE)" -ForegroundColor Red
+        Pop-Location; Read-Host "Press Enter to exit"; exit 1
+    }
 } else {
-    Write-Host "[FAIL] scan-photos.ps1 not found" -ForegroundColor Red
+    Write-Host "[FAIL] scan-photos.py not found" -ForegroundColor Red
     Pop-Location; Read-Host "Press Enter to exit"; exit 1
 }
 Write-Host ""
