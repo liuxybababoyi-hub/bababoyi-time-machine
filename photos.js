@@ -1,5 +1,5 @@
 // Photo list for bababoyi-time-machine
-// 53 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
+// 59 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
   {"src": "photos/微信图片_20260708172532_288_385.heic", "thumb": "photos/thumbs/微信图片_20260708172532_288_385.jpg", "preview": "photos/previews/微信图片_20260708172532_288_385.jpg", "alt": "微信图片_20260708172532_288_385", "date": "2026-07-08"},
   {"src": "photos/微信图片_20260708172529_287_385.heic", "thumb": "photos/thumbs/微信图片_20260708172529_287_385.jpg", "preview": "photos/previews/微信图片_20260708172529_287_385.jpg", "alt": "微信图片_20260708172529_287_385", "date": "2026-07-08"},
@@ -22,14 +22,20 @@ var PHOTOS = [
   {"src": "photos/DSC_1709.JPG", "thumb": "photos/thumbs/DSC_1709.jpg", "preview": "photos/previews/DSC_1709.jpg", "alt": "DSC_1709", "date": "2026-07-04"},
   {"src": "photos/DSC_1708.JPG", "thumb": "photos/thumbs/DSC_1708.jpg", "preview": "photos/previews/DSC_1708.jpg", "alt": "DSC_1708", "date": "2026-07-04"},
   {"src": "photos/微信图片_20260708172506_279_385.heic", "thumb": "photos/thumbs/微信图片_20260708172506_279_385.jpg", "preview": "photos/previews/微信图片_20260708172506_279_385.jpg", "alt": "微信图片_20260708172506_279_385", "date": "2026-07-03"},
+  {"src": "photos/IMG_8425.HEIC", "thumb": "photos/thumbs/IMG_8425.jpg", "preview": "photos/previews/IMG_8425.jpg", "alt": "IMG_8425", "date": "2026-06-15"},
   {"src": "photos/DSC_1618.JPG", "thumb": "photos/thumbs/DSC_1618.jpg", "preview": "photos/previews/DSC_1618.jpg", "alt": "DSC_1618", "date": "2026-06-11"},
   {"src": "photos/DSC_1612.JPG", "thumb": "photos/thumbs/DSC_1612.jpg", "preview": "photos/previews/DSC_1612.jpg", "alt": "DSC_1612", "date": "2026-06-11"},
   {"src": "photos/DSC_1605.JPG", "thumb": "photos/thumbs/DSC_1605.jpg", "preview": "photos/previews/DSC_1605.jpg", "alt": "DSC_1605", "date": "2026-06-11"},
   {"src": "photos/屏幕截图 2026-06-10 132111.png", "thumb": "photos/thumbs/屏幕截图 2026-06-10 132111.jpg", "preview": "photos/previews/屏幕截图 2026-06-10 132111.jpg", "alt": "屏幕截图 2026-06-10 132111", "date": "2026-06-10"},
   {"src": "photos/NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57.png", "thumb": "photos/thumbs/NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57.jpg", "preview": "photos/previews/NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57.jpg", "alt": "NBA 2K26 Screenshot 2026.06.06 - 23.15.19.57", "date": "2026-06-06"},
+  {"src": "photos/IMG_8258.HEIC", "thumb": "photos/thumbs/IMG_8258.jpg", "preview": "photos/previews/IMG_8258.jpg", "alt": "IMG_8258", "date": "2026-06-06"},
+  {"src": "photos/IMG_8232.HEIC", "thumb": "photos/thumbs/IMG_8232.jpg", "preview": "photos/previews/IMG_8232.jpg", "alt": "IMG_8232", "date": "2026-06-05"},
   {"src": "photos/DSC_1593.JPG", "thumb": "photos/thumbs/DSC_1593.jpg", "preview": "photos/previews/DSC_1593.jpg", "alt": "DSC_1593", "date": "2026-06-04"},
+  {"src": "photos/IMG_8221.HEIC", "thumb": "photos/thumbs/IMG_8221.jpg", "preview": "photos/previews/IMG_8221.jpg", "alt": "IMG_8221", "date": "2026-06-04"},
   {"src": "photos/Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79.png", "thumb": "photos/thumbs/Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79.jpg", "preview": "photos/previews/Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79.jpg", "alt": "Sleeping Dogs Definitive Edition Screenshot 2026.05.22 - 13.50.15.79", "date": "2026-05-22"},
   {"src": "photos/屏幕截图 2026-04-13 190202.png", "thumb": "photos/thumbs/屏幕截图 2026-04-13 190202.jpg", "preview": "photos/previews/屏幕截图 2026-04-13 190202.jpg", "alt": "屏幕截图 2026-04-13 190202", "date": "2026-04-13"},
+  {"src": "photos/IMG_5335.HEIC", "thumb": "photos/thumbs/IMG_5335.jpg", "preview": "photos/previews/IMG_5335.jpg", "alt": "IMG_5335", "date": "2026-03-07"},
+  {"src": "photos/55CFF44C-ECE0-4BFC-AA94-3F9CAC40664D.heic", "thumb": "photos/thumbs/55CFF44C-ECE0-4BFC-AA94-3F9CAC40664D.jpg", "preview": "photos/previews/55CFF44C-ECE0-4BFC-AA94-3F9CAC40664D.jpg", "alt": "55CFF44C-ECE0-4BFC-AA94-3F9CAC40664D", "date": "2026-03-07"},
   {"src": "photos/Hogwarts Legacy Screenshot 2026.02.11 - 16.54.34.64.png", "thumb": "photos/thumbs/Hogwarts Legacy Screenshot 2026.02.11 - 16.54.34.64.jpg", "preview": "photos/previews/Hogwarts Legacy Screenshot 2026.02.11 - 16.54.34.64.jpg", "alt": "Hogwarts Legacy Screenshot 2026.02.11 - 16.54.34.64", "date": "2026-02-11"},
   {"src": "photos/Detroit  Become Human Screenshot 2026.02.04 - 15.30.32.12.png", "thumb": "photos/thumbs/Detroit  Become Human Screenshot 2026.02.04 - 15.30.32.12.jpg", "preview": "photos/previews/Detroit  Become Human Screenshot 2026.02.04 - 15.30.32.12.jpg", "alt": "Detroit  Become Human Screenshot 2026.02.04 - 15.30.32.12", "date": "2026-02-04"},
   {"src": "photos/Sons of the Forest Screenshot 2026.02.04 - 00.42.19.22.png", "thumb": "photos/thumbs/Sons of the Forest Screenshot 2026.02.04 - 00.42.19.22.jpg", "preview": "photos/previews/Sons of the Forest Screenshot 2026.02.04 - 00.42.19.22.jpg", "alt": "Sons of the Forest Screenshot 2026.02.04 - 00.42.19.22", "date": "2026-02-04"},
