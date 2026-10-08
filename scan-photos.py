@@ -74,11 +74,14 @@ def extract_date_filename(filepath: Path) -> str | None:
     for pat in patterns:
         m = re.search(pat, name)
         if m:
-            y, mo, d = m.group(1), m.group(2), m.group(3)
+            y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+            # 校验范围，避免把普通数字串（如 livePhoto_1791176818）误当成日期
+            if not (1900 <= y <= 2100 and 1 <= mo <= 12 and 1 <= d <= 31):
+                continue
             hh = m.group(4) or '00'
             mm = m.group(5) or '00'
             ss = m.group(6) or '00'
-            return f'{y}:{mo}:{d} {hh}:{mm}:{ss}'
+            return f'{y}:{mo:02d}:{d:02d} {hh}:{mm}:{ss}'
     return None
 
 

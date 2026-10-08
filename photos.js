@@ -1,6 +1,20 @@
 // Photo list for bababoyi-time-machine
-// 59 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
+// 72 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
+  {"src": "photos/livePhoto_1791176818.jpeg", "thumb": "photos/thumbs/livePhoto_1791176818.jpg", "preview": "photos/previews/livePhoto_1791176818.jpg", "alt": "livePhoto_1791176818", "date": "2026-10-08"},
+  {"src": "photos/IMG_0816.HEIC", "thumb": "photos/thumbs/IMG_0816.jpg", "preview": "photos/previews/IMG_0816.jpg", "alt": "IMG_0816", "date": "2026-10-07"},
+  {"src": "photos/IMG_0815.HEIC", "thumb": "photos/thumbs/IMG_0815.jpg", "preview": "photos/previews/IMG_0815.jpg", "alt": "IMG_0815", "date": "2026-10-07"},
+  {"src": "photos/IMG_0882.JPG", "thumb": "photos/thumbs/IMG_0882.jpg", "preview": "photos/previews/IMG_0882.jpg", "alt": "IMG_0882", "date": "2026-10-06"},
+  {"src": "photos/IMG_1026.JPG", "thumb": "photos/thumbs/IMG_1026.jpg", "preview": "photos/previews/IMG_1026.jpg", "alt": "IMG_1026", "date": "2026-10-06"},
+  {"src": "photos/IMG_0871.HEIC", "thumb": "photos/thumbs/IMG_0871.jpg", "preview": "photos/previews/IMG_0871.jpg", "alt": "IMG_0871", "date": "2026-10-06"},
+  {"src": "photos/IMG_1033.JPG", "thumb": "photos/thumbs/IMG_1033.jpg", "preview": "photos/previews/IMG_1033.jpg", "alt": "IMG_1033", "date": "2026-10-05"},
+  {"src": "photos/IMG_0765.HEIC", "thumb": "photos/thumbs/IMG_0765.jpg", "preview": "photos/previews/IMG_0765.jpg", "alt": "IMG_0765", "date": "2026-10-05"},
+  {"src": "photos/IMG_0908.JPG", "thumb": "photos/thumbs/IMG_0908.jpg", "preview": "photos/previews/IMG_0908.jpg", "alt": "IMG_0908", "date": "2026-10-05"},
+  {"src": "photos/IMG_0742.HEIC", "thumb": "photos/thumbs/IMG_0742.jpg", "preview": "photos/previews/IMG_0742.jpg", "alt": "IMG_0742", "date": "2026-10-05"},
+  {"src": "photos/IMG_0739.HEIC", "thumb": "photos/thumbs/IMG_0739.jpg", "preview": "photos/previews/IMG_0739.jpg", "alt": "IMG_0739", "date": "2026-10-05"},
+  {"src": "photos/IMG_0966.JPG", "thumb": "photos/thumbs/IMG_0966.jpg", "preview": "photos/previews/IMG_0966.jpg", "alt": "IMG_0966", "date": "2026-10-05"},
+  {"src": "photos/IMG_0666.HEIC", "thumb": "photos/thumbs/IMG_0666.jpg", "preview": "photos/previews/IMG_0666.jpg", "alt": "IMG_0666", "date": "2026-10-05"},
+  {"src": "photos/IMG_0660.HEIC", "thumb": "photos/thumbs/IMG_0660.jpg", "preview": "photos/previews/IMG_0660.jpg", "alt": "IMG_0660", "date": "2026-10-05"},
   {"src": "photos/微信图片_20260708172532_288_385.heic", "thumb": "photos/thumbs/微信图片_20260708172532_288_385.jpg", "preview": "photos/previews/微信图片_20260708172532_288_385.jpg", "alt": "微信图片_20260708172532_288_385", "date": "2026-07-08"},
   {"src": "photos/微信图片_20260708172529_287_385.heic", "thumb": "photos/thumbs/微信图片_20260708172529_287_385.jpg", "preview": "photos/previews/微信图片_20260708172529_287_385.jpg", "alt": "微信图片_20260708172529_287_385", "date": "2026-07-08"},
   {"src": "photos/微信图片_20260708172525_286_385.heic", "thumb": "photos/thumbs/微信图片_20260708172525_286_385.jpg", "preview": "photos/previews/微信图片_20260708172525_286_385.jpg", "alt": "微信图片_20260708172525_286_385", "date": "2026-07-08"},
@@ -15,7 +29,6 @@ var PHOTOS = [
   {"src": "photos/微信图片_20260708105035_850_5.heic", "thumb": "photos/thumbs/微信图片_20260708105035_850_5.jpg", "preview": "photos/previews/微信图片_20260708105035_850_5.jpg", "alt": "微信图片_20260708105035_850_5", "date": "2026-07-08"},
   {"src": "photos/DSC_1730.JPG", "thumb": "photos/thumbs/DSC_1730.jpg", "preview": "photos/previews/DSC_1730.jpg", "alt": "DSC_1730", "date": "2026-07-04"},
   {"src": "photos/DSC_1718.JPG", "thumb": "photos/thumbs/DSC_1718.jpg", "preview": "photos/previews/DSC_1718.jpg", "alt": "DSC_1718", "date": "2026-07-04"},
-  {"src": "photos/DSC_1717.JPG", "thumb": "photos/thumbs/DSC_1717.jpg", "preview": "photos/previews/DSC_1717.jpg", "alt": "DSC_1717", "date": "2026-07-04"},
   {"src": "photos/DSC_1714.JPG", "thumb": "photos/thumbs/DSC_1714.jpg", "preview": "photos/previews/DSC_1714.jpg", "alt": "DSC_1714", "date": "2026-07-04"},
   {"src": "photos/DSC_1712.JPG", "thumb": "photos/thumbs/DSC_1712.jpg", "preview": "photos/previews/DSC_1712.jpg", "alt": "DSC_1712", "date": "2026-07-04"},
   {"src": "photos/DSC_1710.JPG", "thumb": "photos/thumbs/DSC_1710.jpg", "preview": "photos/previews/DSC_1710.jpg", "alt": "DSC_1710", "date": "2026-07-04"},
