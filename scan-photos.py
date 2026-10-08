@@ -108,8 +108,11 @@ def make_thumbnail(src: Path, dst: Path, max_w: int = MAX_THUMB_WIDTH, quality: 
     if not has_pil():
         return 'SKIP (pip install Pillow)'
 
-    from PIL import Image
+    from PIL import Image, ImageOps
     img = Image.open(src)
+    # 按 EXIF Orientation 转正像素（相机竖拍的照片像素是横着存的，
+    # 标记方向为 6/8 等；不处理的话缩略图会横过来）
+    img = ImageOps.exif_transpose(img)
     w, h = img.size
 
     if w <= max_w:
@@ -134,7 +137,7 @@ def make_thumbnail(src: Path, dst: Path, max_w: int = MAX_THUMB_WIDTH, quality: 
 
 # ── Main scan ───────────────────────────────────────────────────
 
-def scan(ascending: bool = False):
+def scan(ascending: bool = False, force: bool = False):
     if not PHOTOS_DIR.exists():
         print(f'[!] photos/ not found: {PHOTOS_DIR}')
         print('    Create a photos/ folder and put images in it.')
@@ -154,7 +157,7 @@ def scan(ascending: bool = False):
             thumb_path = THUMB_DIR / thumb_name
             thumb_rel = f'photos/thumbs/{thumb_name}'
 
-            if not thumb_path.exists():
+            if force or not thumb_path.exists():
                 status = make_thumbnail(f, thumb_path, MAX_THUMB_WIDTH)
                 print(f'  [thumb] {status}  {thumb_name}')
             else:
@@ -165,7 +168,7 @@ def scan(ascending: bool = False):
             preview_path = PREVIEW_DIR / preview_name
             preview_rel = f'photos/previews/{preview_name}'
 
-            if not preview_path.exists():
+            if force or not preview_path.exists():
                 status = make_thumbnail(f, preview_path, MAX_PREVIEW_WIDTH)
                 print(f'  [preview] {status}  {preview_name}')
             else:
@@ -214,5 +217,6 @@ var PHOTOS = [
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Scan photos, generate thumbnails & photos.js')
     parser.add_argument('--asc', action='store_true', help='Sort ascending (oldest first)')
+    parser.add_argument('--force', action='store_true', help='Regenerate all thumbnails/previews even if they exist')
     args = parser.parse_args()
-    scan(ascending=args.asc)
+    scan(ascending=args.asc, force=args.force)
