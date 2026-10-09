@@ -1,9 +1,10 @@
 // Photo list for bababoyi-time-machine
-// 71 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
+// 72 photos | sorted by date (newest first) | auto-generated, re-run after adding photos
 var PHOTOS = [
   {"src": "photos/livePhoto_1791176818.jpeg", "thumb": "photos/thumbs/livePhoto_1791176818.jpg", "preview": "photos/previews/livePhoto_1791176818.jpg", "alt": "livePhoto_1791176818", "date": "2026-10-08"},
   {"src": "photos/IMG_0816.HEIC", "thumb": "photos/thumbs/IMG_0816.jpg", "preview": "photos/previews/IMG_0816.jpg", "alt": "IMG_0816", "date": "2026-10-07"},
   {"src": "photos/IMG_0815.HEIC", "thumb": "photos/thumbs/IMG_0815.jpg", "preview": "photos/previews/IMG_0815.jpg", "alt": "IMG_0815", "date": "2026-10-07"},
+  {"src": "photos/IMG_0882.JPG", "thumb": "photos/thumbs/IMG_0882.jpg", "preview": "photos/previews/IMG_0882.jpg", "alt": "IMG_0882", "date": "2026-10-06"},
   {"src": "photos/IMG_1026.JPG", "thumb": "photos/thumbs/IMG_1026.jpg", "preview": "photos/previews/IMG_1026.jpg", "alt": "IMG_1026", "date": "2026-10-06"},
   {"src": "photos/IMG_0871.HEIC", "thumb": "photos/thumbs/IMG_0871.jpg", "preview": "photos/previews/IMG_0871.jpg", "alt": "IMG_0871", "date": "2026-10-06"},
   {"src": "photos/IMG_1033.JPG", "thumb": "photos/thumbs/IMG_1033.jpg", "preview": "photos/previews/IMG_1033.jpg", "alt": "IMG_1033", "date": "2026-10-05"},
